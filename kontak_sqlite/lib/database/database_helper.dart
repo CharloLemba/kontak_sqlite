@@ -10,12 +10,12 @@ class Kontak {
   final int? id;
   final String namaKontak;
   final String nomorHP;
-  final Uint8List? fotoKontak;
+  final Uint8List fotoKontak;
   Kontak({
     required this.id,
     required this.namaKontak,
     required this.nomorHP,
-    this.fotoKontak,
+    required this.fotoKontak,
   });
 
   // Fungsi untuk mengubah objek Kontak menjadi bentuk Map (pasangan key-value) agar bisa dibaca oleh sqflite saat Insert/Update
@@ -36,7 +36,7 @@ class Kontak {
       id: map['id'] as int?,
       namaKontak: map['namaKontak'] as String,
       nomorHP: map['nomorHP'] as String,
-      fotoKontak: map['fotoKontak'] as Uint8List?,
+      fotoKontak: map['fotoKontak'] as Uint8List,
     );
   }
 
@@ -72,7 +72,7 @@ class DatabaseHelper {
         await db.execute('''
           CREATE TABLE kontak (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            namaKonatk TEXT,
+            namaKontak TEXT,
             nomorHP TEXT,
             fotoKontak BLOB
           )
