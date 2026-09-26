@@ -1,4 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Tambahkan izin ini di sini (untuk Android lama) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <!-- Kalau nanti butuh simpan file secara fisik, ini opsional: -->
+    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
+
     <application
         android:label="Kontak - SQLite"
         android:name="${applicationName}"
