@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:kontak_sqlite/pages/tambah_kontak.dart' as tambah_kontak;
 import 'package:kontak_sqlite/database/database_helper.dart';
@@ -12,12 +10,16 @@ class Beranda extends StatefulWidget {
 }
 
 class _BerandaState extends State<Beranda> {
+  // -----------------------------------------
   // Fungsi untuk mengambil data dari database
+  // -----------------------------------------
   Future<List<Kontak>> _dataKontak() async {
     return await DatabaseHelper.instance.getKontak();
   }
 
-  //Fungsi untuk memperbarui tampilan
+  // ---------------------------------
+  // Fungsi untuk memperbarui tampilan
+  // ---------------------------------
   void _refreshData() {
     setState(() {});
   }
@@ -35,17 +37,23 @@ class _BerandaState extends State<Beranda> {
         child: FutureBuilder<List<Kontak>>(
           future: _dataKontak(),
           builder: (context, snapshot) {
+            // ----------------------------------------------------------
             // Saat data masih dimuat, tampilkan animasi loading berputar
+            // ----------------------------------------------------------
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            // Ketika gagal/error mengambil data
+            // -------------------------------------------------------
+            // Fungsi untuk menangkap error dan menampilkannya ke user
+            // -------------------------------------------------------
             else if (snapshot.hasError) {
               return Center(
                 child: Text("Terjadi kesaalahan: ${snapshot.error}"),
               );
             }
-            // Ketika data kosong
+            // -------------------------------------------
+            // Ketika data kosong, tamppilkan teks default
+            // -------------------------------------------
             else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return const Center(
                 child: Text(
@@ -55,7 +63,9 @@ class _BerandaState extends State<Beranda> {
                 ),
               );
             }
+            // -------------------------------------------------
             // Jika ada data, masukkan ke dalam gridview.builder
+            // -------------------------------------------------
             final listKontak = snapshot.data!;
             return Padding(
               padding: EdgeInsets.all(12),
@@ -77,7 +87,9 @@ class _BerandaState extends State<Beranda> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        // ------------------------------
                         // Menampilkan foto dari database
+                        // ------------------------------
                         Expanded(
                           child: ClipRRect(
                             borderRadius: BorderRadius.vertical(
@@ -94,6 +106,9 @@ class _BerandaState extends State<Beranda> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // -------------------------------------
+                              // Menampilkan nama kontak dari database
+                              // -------------------------------------
                               Text(
                                 kontak.namaKontak,
                                 style: const TextStyle(
@@ -104,6 +119,9 @@ class _BerandaState extends State<Beranda> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 4),
+                              // ------------------------------------------
+                              // Menampilkan nomor handphone  dari database
+                              // ------------------------------------------
                               Text(
                                 kontak.nomorHP,
                                 style: const TextStyle(
@@ -126,10 +144,14 @@ class _BerandaState extends State<Beranda> {
         ),
       ),
 
+      // ------------------
       // Tombol tambah data
+      // ------------------
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          // ------------------------------------------------------------------------
           // Menunggu hingga kembali dari halaman TambahKontak untuk memperbarui data
+          // ------------------------------------------------------------------------
           await Navigator.push(
             context,
             MaterialPageRoute<void>(

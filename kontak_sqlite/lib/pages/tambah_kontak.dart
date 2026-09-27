@@ -13,14 +13,20 @@ class TambahKontak extends StatefulWidget {
 }
 
 class _TambahKontakState extends State<TambahKontak> {
+  // ---------------------------
   // Menyimpan foto yang dipilih
+  // ---------------------------
   File? _fotoTerpilih;
 
+  // --------------------
   // Controller TextField
+  // --------------------
   final TextEditingController namaKontakController = TextEditingController();
   final TextEditingController nomorHPController = TextEditingController();
 
+  // --------------------------
   // Mengambil foto dari galeri
+  // --------------------------
   Future<void> _ambilFotoDariGaleri() async {
     final ImagePicker picker = ImagePicker();
     final XFile? foto = await picker.pickImage(source: ImageSource.gallery);
@@ -31,12 +37,16 @@ class _TambahKontakState extends State<TambahKontak> {
     }
   }
 
-  // Menyimpan kontak
+  // ----------------------------
+  // Menyimpan kontak ke database
+  // ----------------------------
   Future<void> simpanKontak() async {
     final String namaKontak = namaKontakController.text.trim();
     final String nomorHPKontak = nomorHPController.text.trim();
 
+    // ---------------------------
     // Pastikan foto sudah dipilih
+    // ---------------------------
     if (_fotoTerpilih == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Silakan pilih foto terlebih dahulu')),
@@ -44,10 +54,14 @@ class _TambahKontakState extends State<TambahKontak> {
       return;
     }
 
+    // ---------------------------
     // Ubah foto menjadi Uint8List
+    // ---------------------------
     final Uint8List fotoBytes = await _fotoTerpilih!.readAsBytes();
 
-    // Buat object Kontak
+    // ------------------------------------------------------
+    // Buat object baru untuk dimasukan ke dalam class Kontak
+    // ------------------------------------------------------
     final kontakBaru = Kontak(
       id: null,
       namaKontak: namaKontak,
@@ -61,9 +75,12 @@ class _TambahKontakState extends State<TambahKontak> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Kontak berhasil disimpan!')),
       );
-      // Kembali setelah berhasil menyimpan
       Navigator.pop(context);
-    } catch (e) {
+    }
+    // ------------------------------------------
+    // Menangkap error dan menampilkannya ke user
+    // ------------------------------------------
+    catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Kontak gagal disimpan!\n$e')));
@@ -92,9 +109,9 @@ class _TambahKontakState extends State<TambahKontak> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // =========================
-              // FOTO
-              // =========================
+              // =======================
+              // Upload foto ke database
+              // =======================
               if (_fotoTerpilih != null) ...[
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
@@ -137,9 +154,9 @@ class _TambahKontakState extends State<TambahKontak> {
 
               const SizedBox(height: 20),
 
-              // =========================
-              // FORM
-              // =========================
+              // ========================================
+              // Form isi nama kontak dan nomor handphone
+              // ========================================
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Card(
@@ -175,9 +192,9 @@ class _TambahKontakState extends State<TambahKontak> {
         ),
       ),
 
-      // =========================
-      // BUTTON SIMPAN
-      // =========================
+      // =============
+      // Tombol Simpan
+      // =============
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(12),
