@@ -80,61 +80,65 @@ class _BerandaState extends State<Beranda> {
                 itemBuilder: (context, index) {
                   final kontak = listKontak[index];
                   return Card(
+                    clipBehavior: Clip.antiAlias, // Memastikan efek ripple tidak keluar dari sudut Card
                     elevation: 4,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // ------------------------------
-                        // Menampilkan foto dari database
-                        // ------------------------------
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(12),
-                            ),
-                            child: Image.memory(
-                              kontak.fotoKontak,
-                              fit: BoxFit.cover,
+                    child: InkWell(
+                      onTap: () {},
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // ------------------------------
+                          // Menampilkan foto dari database
+                          // ------------------------------
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(12),
+                              ),
+                              child: Image.memory(
+                                kontak.fotoKontak,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // -------------------------------------
-                              // Menampilkan nama kontak dari database
-                              // -------------------------------------
-                              Text(
-                                kontak.namaKontak,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                          Padding(
+                            padding: EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // -------------------------------------
+                                // Menampilkan nama kontak dari database
+                                // -------------------------------------
+                                Text(
+                                  kontak.namaKontak,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              // ------------------------------------------
-                              // Menampilkan nomor handphone  dari database
-                              // ------------------------------------------
-                              Text(
-                                kontak.nomorHP,
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 14,
+                                const SizedBox(height: 4),
+                                // ------------------------------------------
+                                // Menampilkan nomor handphone  dari database
+                                // ------------------------------------------
+                                Text(
+                                  kontak.nomorHP,
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 14,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },
