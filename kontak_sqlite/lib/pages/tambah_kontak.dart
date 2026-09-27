@@ -104,97 +104,99 @@ class _TambahKontakState extends State<TambahKontak> {
         centerTitle: true,
       ),
 
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // =======================
-              // Upload foto ke database
-              // =======================
-              if (_fotoTerpilih != null) ...[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.file(
-                    _fotoTerpilih!,
-                    width: 250,
-                    height: 250,
-                    fit: BoxFit.cover,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // =======================
+                // Upload foto ke database
+                // =======================
+                if (_fotoTerpilih != null) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(
+                      _fotoTerpilih!,
+                      width: 250,
+                      height: 250,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
-                ElevatedButton.icon(
-                  onPressed: _ambilFotoDariGaleri,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Ganti Foto'),
-                ),
-              ] else ...[
-                Card(
-                  elevation: 10,
-                  child: InkWell(
-                    onTap: _ambilFotoDariGaleri,
-                    child: const Padding(
-                      padding: EdgeInsets.all(12.0),
+                  ElevatedButton.icon(
+                    onPressed: _ambilFotoDariGaleri,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Ganti Foto'),
+                  ),
+                ] else ...[
+                  Card(
+                    elevation: 10,
+                    child: InkWell(
+                      onTap: _ambilFotoDariGaleri,
+                      child: const Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add, size: 30, color: Colors.indigo),
+
+                            SizedBox(height: 20),
+
+                            Text('Silakan ambil foto dari penyimpanan'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 20),
+
+                // ========================================
+                // Form isi nama kontak dan nomor handphone
+                // ========================================
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add, size: 30, color: Colors.indigo),
+                          TextField(
+                            controller: namaKontakController,
+                            decoration: const InputDecoration(
+                              labelText: 'Nama Kontak',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
 
-                          SizedBox(height: 20),
+                          const SizedBox(height: 30),
 
-                          Text('Silakan ambil foto dari penyimpanan'),
+                          TextField(
+                            controller: nomorHPController,
+                            keyboardType: TextInputType.phone,
+                            decoration: const InputDecoration(
+                              labelText: 'Nomor Handphone',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
                         ],
                       ),
                     ),
                   ),
                 ),
               ],
-
-              const SizedBox(height: 20),
-
-              // ========================================
-              // Form isi nama kontak dan nomor handphone
-              // ========================================
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        TextField(
-                          controller: namaKontakController,
-                          decoration: const InputDecoration(
-                            labelText: 'Nama Kontak',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-
-                        const SizedBox(height: 30),
-
-                        TextField(
-                          controller: nomorHPController,
-                          keyboardType: TextInputType.phone,
-                          decoration: const InputDecoration(
-                            labelText: 'Nomor Handphone',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
 
-      // =============
+      // -------------
       // Tombol Simpan
-      // =============
+      // -------------
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(12),

@@ -5,6 +5,20 @@
     <!-- Kalau nanti butuh simpan file secara fisik, ini opsional: -->
     <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
 
+    <!-- TAMBAHKAN KODE INI DI SINI -->
+    <queries>
+        <!-- Intent untuk membuka aplikasi Telepon -->
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+            <data android:scheme="tel" />
+        </intent>
+        <!-- Intent untuk membuka aplikasi SMS/Pesan -->
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="smsto" />
+        </intent>
+    </queries>
+
     <application
         android:label="Kontak - SQLite"
         android:name="${applicationName}"

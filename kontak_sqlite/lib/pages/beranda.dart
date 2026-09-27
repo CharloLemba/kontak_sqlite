@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kontak_sqlite/pages/tambah_kontak.dart' as tambah_kontak;
 import 'package:kontak_sqlite/database/database_helper.dart';
+import 'package:kontak_sqlite/pages/edit_kontak.dart' as edit_kontak;
 
 class Beranda extends StatefulWidget {
   const Beranda({super.key});
@@ -86,7 +87,19 @@ class _BerandaState extends State<Beranda> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () async {
+                        // -----------------------------------------------------
+                        // Agar card bisa di-Tap & menuju ke halaman Edit Kontak
+                        // -----------------------------------------------------
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (context) =>
+                                edit_kontak.EditKontak(kontak: kontak),
+                          ),
+                        );
+                        _refreshData();
+                      },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
