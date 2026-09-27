@@ -4,10 +4,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kontak_sqlite/database/database_helper.dart';
-import 'package:kontak_sqlite/widgets/widgets.dart'; // <-- Import file widgets.dart kamu
+import 'package:kontak_sqlite/widgets/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class EditKontak extends StatefulWidget {
+  // ------------------------------------------------------
+  // Variabel kontak untuk menampung data objek dari Kontak
+  // ------------------------------------------------------
   final Kontak kontak;
 
   const EditKontak({super.key, required this.kontak});
@@ -17,11 +20,20 @@ class EditKontak extends StatefulWidget {
 }
 
 class _EditKontakState extends State<EditKontak> {
+  // ----------------------------------------------
+  // Membuat variabel untuk menampung foto terpilih
+  // ----------------------------------------------
   File? _fotoTerpilih;
 
+  // --------------------------------------------------------------------------------
+  // Controller untuk menangkap input dari Text Field nama kontak dan nomor handphone
+  // --------------------------------------------------------------------------------
   late TextEditingController namaKontakController;
   late TextEditingController nomorHPController;
 
+  // ---------------------------------------------------------------------------------
+  // Mengambil data nama dan nomor hp dari database berdasarkan id/kontak yang dipilih
+  // ---------------------------------------------------------------------------------
   @override
   void initState() {
     super.initState();
@@ -41,6 +53,9 @@ class _EditKontakState extends State<EditKontak> {
     }
   }
 
+  // ----------------------------------------
+  // Fungsi untuk update kontak (INSERT INTO)
+  // ----------------------------------------
   Future<void> prosesUpdateKontak() async {
     final String namaKontak = namaKontakController.text.trim();
     final String nomorHPKontak = nomorHPController.text.trim();
@@ -73,6 +88,9 @@ class _EditKontakState extends State<EditKontak> {
     }
   }
 
+  // ----------------------------------
+  // Fungsi untuk menghapus data kontak
+  // ----------------------------------
   Future<void> prosesHapusKontak() async {
     bool? konfirmasi = await showDialog(
       context: context,
@@ -102,6 +120,9 @@ class _EditKontakState extends State<EditKontak> {
     }
   }
 
+  // -------------------------------------------
+  // Fungsi untuk menelpon nomor hp yang dipilih
+  // -------------------------------------------
   Future<void> _panggilNomor() async {
     final Uri url = Uri(scheme: 'tel', path: nomorHPController.text.trim());
     if (await canLaunchUrl(url)) {
@@ -114,6 +135,9 @@ class _EditKontakState extends State<EditKontak> {
     }
   }
 
+  // --------------------------------------------
+  // Fungsi untuk SMS/Pesan nomor hp yang dipilih
+  // --------------------------------------------
   Future<void> _kirimPesan() async {
     final Uri url = Uri(scheme: 'sms', path: nomorHPController.text.trim());
     if (await canLaunchUrl(url)) {
@@ -229,7 +253,9 @@ class _EditKontakState extends State<EditKontak> {
         ),
       ),
 
-      // Panggil Widget kustom dari file widgets.dart dengan sangat bersih di sini!
+      // --------------------------------------------------------------------------------------------------
+      // Panggil Widget kustom dari file widgets.dart dengan semua VoidCallBack dan fungsinya masing-masing
+      // --------------------------------------------------------------------------------------------------
       bottomNavigationBar: BottomActionButtons(
         onSave: () async {
           if (namaKontakController.text.trim().isEmpty ||

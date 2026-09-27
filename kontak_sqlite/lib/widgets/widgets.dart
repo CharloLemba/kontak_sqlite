@@ -22,7 +22,9 @@ class BottomActionButtons extends StatelessWidget {
         color: Colors.white,
         child: Row(
           children: [
-            // 1. Tombol Simpan (Indigo)
+            // ------------------
+            // Tombol Simpan Data
+            // ------------------
             Expanded(
               child: ElevatedButton(
                 onPressed: onSave,
@@ -46,7 +48,9 @@ class BottomActionButtons extends StatelessWidget {
             ),
             const SizedBox(width: 8),
 
-            // 2. Tombol Hapus (Merah)
+            // -----------------
+            // Tombol Hapus Data
+            // -----------------
             Expanded(
               child: ElevatedButton(
                 onPressed: onDelete,
@@ -70,7 +74,9 @@ class BottomActionButtons extends StatelessWidget {
             ),
             const SizedBox(width: 8),
 
-            // 3. Tombol Telepon (Hijau)
+            // --------------
+            // Tombol Telepon
+            // --------------
             Expanded(
               child: ElevatedButton(
                 onPressed: onCall,
@@ -94,7 +100,9 @@ class BottomActionButtons extends StatelessWidget {
             ),
             const SizedBox(width: 8),
 
-            // 4. Tombol Pesan/SMS (Biru)
+            // ----------------
+            // Tombol Pesan/SMS
+            // ----------------
             Expanded(
               child: ElevatedButton(
                 onPressed: onMessage,
