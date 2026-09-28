@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:kontak_sqlite/pages/tambah_kontak.dart' as tambah_kontak;
 import 'package:kontak_sqlite/database/database_helper.dart';
@@ -11,16 +13,10 @@ class Beranda extends StatefulWidget {
 }
 
 class _BerandaState extends State<Beranda> {
-  // -----------------------------------------
-  // Fungsi untuk mengambil data dari database
-  // -----------------------------------------
   Future<List<Kontak>> _dataKontak() async {
     return await DatabaseHelper.instance.getKontak();
   }
 
-  // ---------------------------------
-  // Fungsi untuk memperbarui tampilan
-  // ---------------------------------
   void _refreshData() {
     setState(() {});
   }
@@ -31,31 +27,20 @@ class _BerandaState extends State<Beranda> {
       appBar: AppBar(
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
-        title: Text("Kontak - SQLite"),
+        title: const Text("Kontak - SQLite"),
         centerTitle: true,
       ),
       body: SafeArea(
         child: FutureBuilder<List<Kontak>>(
           future: _dataKontak(),
           builder: (context, snapshot) {
-            // ----------------------------------------------------------
-            // Saat data masih dimuat, tampilkan animasi loading berputar
-            // ----------------------------------------------------------
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
-            }
-            // -------------------------------------------------------
-            // Fungsi untuk menangkap error dan menampilkannya ke user
-            // -------------------------------------------------------
-            else if (snapshot.hasError) {
+            } else if (snapshot.hasError) {
               return Center(
-                child: Text("Terjadi kesaalahan: ${snapshot.error}"),
+                child: Text("Terjadi kesalahan: ${snapshot.error}"),
               );
-            }
-            // -------------------------------------------
-            // Ketika data kosong, tamppilkan teks default
-            // -------------------------------------------
-            else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return const Center(
                 child: Text(
                   'Belum ada kontak disimpan.\nTekan tombol + di bawah untuk menambah.',
@@ -64,33 +49,28 @@ class _BerandaState extends State<Beranda> {
                 ),
               );
             }
-            // -------------------------------------------------
-            // Jika ada data, masukkan ke dalam gridview.builder
-            // -------------------------------------------------
+
             final listKontak = snapshot.data!;
             return Padding(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               child: GridView.builder(
                 itemCount: listKontak.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // Jumlah kolom ke samping
+                  crossAxisCount: 2,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  childAspectRatio: 0.8, // Perbandingan lebar dan tinggi card
+                  childAspectRatio: 0.8,
                 ),
                 itemBuilder: (context, index) {
                   final kontak = listKontak[index];
                   return Card(
-                    clipBehavior: Clip.antiAlias, // Memastikan efek ripple tidak keluar dari sudut Card
+                    clipBehavior: Clip.antiAlias,
                     elevation: 4,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: InkWell(
                       onTap: () async {
-                        // -----------------------------------------------------
-                        // Agar card bisa di-Tap & menuju ke halaman Edit Kontak
-                        // -----------------------------------------------------
                         await Navigator.push(
                           context,
                           MaterialPageRoute<void>(
@@ -103,28 +83,31 @@ class _BerandaState extends State<Beranda> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          // ------------------------------
-                          // Menampilkan foto dari database
-                          // ------------------------------
                           Expanded(
                             child: ClipRRect(
-                              borderRadius: BorderRadius.vertical(
+                              borderRadius: const BorderRadius.vertical(
                                 top: Radius.circular(12),
                               ),
-                              child: Image.memory(
-                                kontak.fotoKontak,
+                              // Menampilkan gambar dari File Path lokal aplikasi
+                              child: Image.file(
+                                File(kontak.fotoPath),
                                 fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Center(
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      color: Colors.grey,
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(12),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // -------------------------------------
-                                // Menampilkan nama kontak dari database
-                                // -------------------------------------
                                 Text(
                                   kontak.namaKontak,
                                   style: const TextStyle(
@@ -135,9 +118,6 @@ class _BerandaState extends State<Beranda> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 4),
-                                // ------------------------------------------
-                                // Menampilkan nomor handphone  dari database
-                                // ------------------------------------------
                                 Text(
                                   kontak.nomorHP,
                                   style: const TextStyle(
@@ -160,15 +140,8 @@ class _BerandaState extends State<Beranda> {
           },
         ),
       ),
-
-      // ------------------
-      // Tombol tambah data
-      // ------------------
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // ------------------------------------------------------------------------
-          // Menunggu hingga kembali dari halaman TambahKontak untuk memperbarui data
-          // ------------------------------------------------------------------------
           await Navigator.push(
             context,
             MaterialPageRoute<void>(

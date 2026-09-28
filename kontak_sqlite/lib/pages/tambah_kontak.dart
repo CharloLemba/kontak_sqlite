@@ -1,9 +1,10 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kontak_sqlite/database/database_helper.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as foto_path;
 
 class TambahKontak extends StatefulWidget {
   const TambahKontak({super.key});
@@ -13,20 +14,11 @@ class TambahKontak extends StatefulWidget {
 }
 
 class _TambahKontakState extends State<TambahKontak> {
-  // ---------------------------
-  // Menyimpan foto yang dipilih
-  // ---------------------------
   File? _fotoTerpilih;
 
-  // --------------------
-  // Controller TextField
-  // --------------------
   final TextEditingController namaKontakController = TextEditingController();
   final TextEditingController nomorHPController = TextEditingController();
 
-  // --------------------------
-  // Mengambil foto dari galeri
-  // --------------------------
   Future<void> _ambilFotoDariGaleri() async {
     final ImagePicker picker = ImagePicker();
     final XFile? foto = await picker.pickImage(source: ImageSource.gallery);
@@ -37,16 +29,22 @@ class _TambahKontakState extends State<TambahKontak> {
     }
   }
 
-  // ----------------------------
-  // Menyimpan kontak ke database
-  // ----------------------------
+  // Fungsi menyalin file ke direktori internal aplikasi dan mengembalikan path finalnya
+  Future<String> _simpanFileKeStorage(File fileGambar) async {
+    final Directory direktoriApp = await getApplicationDocumentsDirectory();
+    final String namaFile =
+        '${DateTime.now().millisecondsSinceEpoch}_${foto_path.basename(fileGambar.path)}';
+    final String pathTujuan = foto_path.join(direktoriApp.path, namaFile);
+
+    // Salin file ke folder lokal aplikasi
+    final File fileBaru = await fileGambar.copy(pathTujuan);
+    return fileBaru.path;
+  }
+
   Future<void> simpanKontak() async {
     final String namaKontak = namaKontakController.text.trim();
     final String nomorHPKontak = nomorHPController.text.trim();
 
-    // ---------------------------
-    // Pastikan foto sudah dipilih
-    // ---------------------------
     if (_fotoTerpilih == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Silakan pilih foto terlebih dahulu')),
@@ -54,33 +52,27 @@ class _TambahKontakState extends State<TambahKontak> {
       return;
     }
 
-    // ---------------------------
-    // Ubah foto menjadi Uint8List
-    // ---------------------------
-    final Uint8List fotoBytes = await _fotoTerpilih!.readAsBytes();
-
-    // ------------------------------------------------------
-    // Buat object baru untuk dimasukan ke dalam class Kontak
-    // ------------------------------------------------------
-    final kontakBaru = Kontak(
-      id: null,
-      namaKontak: namaKontak,
-      nomorHP: nomorHPKontak,
-      fotoKontak: fotoBytes,
-    );
-
     try {
+      // 1. Simpan file gambar secara fisik ke storage internal aplikasi
+      final String pathFinal = await _simpanFileKeStorage(_fotoTerpilih!);
+
+      // 2. Buat objek Kontak dengan path string
+      final kontakBaru = Kontak(
+        id: null,
+        namaKontak: namaKontak,
+        nomorHP: nomorHPKontak,
+        fotoPath: pathFinal,
+      );
+
+      // 3. Masukkan ke database SQLite
       await DatabaseHelper.instance.insertKontak(kontakBaru);
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Kontak berhasil disimpan!')),
       );
       Navigator.pop(context);
-    }
-    // ------------------------------------------
-    // Menangkap error dan menampilkannya ke user
-    // ------------------------------------------
-    catch (e) {
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Kontak gagal disimpan!\n$e')));
@@ -103,16 +95,12 @@ class _TambahKontakState extends State<TambahKontak> {
         title: const Text('Tambah Kontak'),
         centerTitle: true,
       ),
-
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // =======================
-                // Upload foto ke database
-                // =======================
                 if (_fotoTerpilih != null) ...[
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
@@ -123,9 +111,7 @@ class _TambahKontakState extends State<TambahKontak> {
                       fit: BoxFit.cover,
                     ),
                   ),
-
                   const SizedBox(height: 10),
-
                   ElevatedButton.icon(
                     onPressed: _ambilFotoDariGaleri,
                     icon: const Icon(Icons.refresh),
@@ -142,9 +128,7 @@ class _TambahKontakState extends State<TambahKontak> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.add, size: 30, color: Colors.indigo),
-
                             SizedBox(height: 20),
-
                             Text('Silakan ambil foto dari penyimpanan'),
                           ],
                         ),
@@ -152,12 +136,7 @@ class _TambahKontakState extends State<TambahKontak> {
                     ),
                   ),
                 ],
-
                 const SizedBox(height: 20),
-
-                // ========================================
-                // Form isi nama kontak dan nomor handphone
-                // ========================================
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Card(
@@ -172,9 +151,7 @@ class _TambahKontakState extends State<TambahKontak> {
                               border: OutlineInputBorder(),
                             ),
                           ),
-
                           const SizedBox(height: 30),
-
                           TextField(
                             controller: nomorHPController,
                             keyboardType: TextInputType.phone,
@@ -193,10 +170,6 @@ class _TambahKontakState extends State<TambahKontak> {
           ),
         ),
       ),
-
-      // -------------
-      // Tombol Simpan
-      // -------------
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -211,24 +184,20 @@ class _TambahKontakState extends State<TambahKontak> {
                   );
                   return;
                 }
-
                 if (nomorHPController.text.trim().isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Nomor HP belum diisi')),
                   );
                   return;
                 }
-
                 if (_fotoTerpilih == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Foto belum dipilih')),
                   );
                   return;
                 }
-
                 await simpanKontak();
               },
-
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo,
                 foregroundColor: Colors.white,
@@ -236,7 +205,6 @@ class _TambahKontakState extends State<TambahKontak> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-
               child: const Text(
                 'SIMPAN KONTAK',
                 style: TextStyle(fontSize: 16, color: Colors.white),

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -10,12 +8,12 @@ class Kontak {
   final int? id;
   final String namaKontak;
   final String nomorHP;
-  final Uint8List fotoKontak;
+  final String fotoPath;
   Kontak({
     required this.id,
     required this.namaKontak,
     required this.nomorHP,
-    required this.fotoKontak,
+    required this.fotoPath,
   });
 
   // ---------------------------------------------------------------------------------------------------------------------------
@@ -27,8 +25,7 @@ class Kontak {
       'namaKontak':
           namaKontak, // Memasukkan nilai namaKontak ke key 'namaKontak'
       'nomorHP': nomorHP, // Memasukkan nilai nomorHP ke key 'nomorHP'
-      'fotoKontak':
-          fotoKontak, // Memasukkan nilai fotoKontak ke key 'fotoKontak'
+      'fotoPath': fotoPath, // Memasukkan nilai fotoKontak ke key 'fotoKontak'
     };
   }
 
@@ -40,7 +37,7 @@ class Kontak {
       id: map['id'] as int?,
       namaKontak: map['namaKontak'] as String,
       nomorHP: map['nomorHP'] as String,
-      fotoKontak: map['fotoKontak'] as Uint8List,
+      fotoPath: map['fotoPath'] as String,
     );
   }
 
@@ -49,7 +46,7 @@ class Kontak {
   // ---------------------------------------------------------------------------------------------
   @override
   String toString() =>
-      'Kontak{id: $id, namaKontak: $namaKontak, nomorHP: $nomorHP, fotoKontak: $fotoKontak}';
+      'Kontak{id: $id, namaKontak: $namaKontak, nomorHP: $nomorHP, fotoPath: $fotoPath}';
 }
 
 // ----------------------------------------
@@ -81,7 +78,7 @@ class DatabaseHelper {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             namaKontak TEXT,
             nomorHP TEXT,
-            fotoKontak BLOB
+            fotoPath TEXT
           )
         ''');
       },
@@ -97,8 +94,8 @@ class DatabaseHelper {
     // Menggunakan rawInsert dengan placeholder '?' untuk keamanan terhadap SQL Injection
     // ----------------------------------------------------------------------------------
     return await db.rawInsert(
-      'INSERT INTO kontak (namaKontak, nomorHP, fotoKontak) VALUES (?, ?, ?)',
-      [kontak.namaKontak, kontak.nomorHP, kontak.fotoKontak],
+      'INSERT INTO kontak (namaKontak, nomorHP, fotoPath) VALUES (?, ?, ?)',
+      [kontak.namaKontak, kontak.nomorHP, kontak.fotoPath],
     );
   }
 
@@ -123,8 +120,8 @@ class DatabaseHelper {
     final db = await instance.database;
     // Menggunakan rawUpdate
     return await db.rawUpdate(
-      'UPDATE kontak SET namaKontak = ?, nomorHP = ?, fotoKontak = ? WHERE id = ?',
-      [kontak.namaKontak, kontak.nomorHP, kontak.fotoKontak, kontak.id],
+      'UPDATE kontak SET namaKontak = ?, nomorHP = ?, fotoPath = ? WHERE id = ?',
+      [kontak.namaKontak, kontak.nomorHP, kontak.fotoPath, kontak.id],
     );
   }
 
