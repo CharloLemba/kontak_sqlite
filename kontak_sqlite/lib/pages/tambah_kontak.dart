@@ -84,23 +84,33 @@ class _TambahKontakState extends State<TambahKontak> {
         fotoPath: pathFinal,
       );
 
-      // ---------------------------------------------------------------------
-      // Lakukakn fungsi insertKontak untuk memasukkan data ke database SQLite
-      // ---------------------------------------------------------------------
+      // --------------------------------------------------------------
+      // Lakukakn fungsi insertKontak untuk memasukkan data ke database
+      // --------------------------------------------------------------
       await DatabaseHelper.instance.insertKontak(kontakBaru);
 
+      // ---------------------------------------------------------
+      // Menampilkan pesan jika data berhasil disimpan ke database
+      // ---------------------------------------------------------
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Kontak berhasil disimpan!')),
       );
       Navigator.pop(context);
-    } catch (e) {
+    }
+    // ------------------------------------------------------
+    // Menampilkan pesan jika data gagal disimpan ke database
+    // ------------------------------------------------------
+    catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Kontak gagal disimpan!\n$e')));
     }
   }
 
+  // ------------------------------------------------------------------
+  // (WAJIB) Fungsi untuk dispose controllers textfield nama & nomor hp
+  // ------------------------------------------------------------------
   @override
   void dispose() {
     namaKontakController.dispose();
@@ -111,18 +121,27 @@ class _TambahKontakState extends State<TambahKontak> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // ---------------------------------------
+      // AppBar Aplikasi - Tampilan TambahKontak
+      // ---------------------------------------
       appBar: AppBar(
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
         title: const Text('Tambah Kontak'),
         centerTitle: true,
       ),
+      // ---------------------------------------------
+      // Bagian utama aplikasi - Tampilan TambahKontak
+      // ---------------------------------------------
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // ----------------------------------------
+                // Menampilkan foto yang sudah dipilih user
+                // ----------------------------------------
                 if (_fotoTerpilih != null) ...[
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
@@ -139,9 +158,16 @@ class _TambahKontakState extends State<TambahKontak> {
                     icon: const Icon(Icons.refresh),
                     label: const Text('Ganti Foto'),
                   ),
-                ] else ...[
+                ]
+                // -------------------------------
+                // Membuat Card untuk memilih foto
+                // -------------------------------
+                else ...[
                   Card(
                     elevation: 10,
+                    // --------------------------------------------------------------------
+                    // InkWell agar Card bisa di-tap dan user bisa memilih foto dari galeri
+                    // --------------------------------------------------------------------
                     child: InkWell(
                       onTap: _ambilFotoDariGaleri,
                       child: const Padding(
@@ -159,6 +185,9 @@ class _TambahKontakState extends State<TambahKontak> {
                   ),
                 ],
                 const SizedBox(height: 20),
+                // ----------------------------------------
+                // Sebuah Card yang menampung dua Textfield
+                // ----------------------------------------
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Card(
@@ -166,6 +195,9 @@ class _TambahKontakState extends State<TambahKontak> {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
+                          // -------------------------------------------------------
+                          // Dua Textfield untuk user dapat mengetik nama & nomor hp
+                          // -------------------------------------------------------
                           TextField(
                             controller: namaKontakController,
                             decoration: const InputDecoration(
@@ -192,35 +224,50 @@ class _TambahKontakState extends State<TambahKontak> {
           ),
         ),
       ),
-      // --------------------------------------
-      // Tombol untuk menimpan data ke database
-      // --------------------------------------
+      // ---------------------------------------
+      // Tombol untuk menyimpan data ke database
+      // ---------------------------------------
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(12),
+          // ------------------------------------------------------------------------------------------
+          // SizedBox dengan width: double.infinity agar tombol yang memanjang berada di bawah scaffold
+          // ------------------------------------------------------------------------------------------
           child: SizedBox(
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
               onPressed: () async {
+                // -------------------------------------------------------
+                // Menampilkan peringatan kalau Textfield nama belum diisi
+                // -------------------------------------------------------
                 if (namaKontakController.text.trim().isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Nama kontak belum diisi')),
                   );
                   return;
                 }
+                // -----------------------------------------------------------
+                // Menampilkan peringatan kalau Textfield nomor hp belum diisi
+                // -----------------------------------------------------------
                 if (nomorHPController.text.trim().isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Nomor HP belum diisi')),
                   );
                   return;
                 }
+                // --------------------------------------------------------
+                // Menampilkan peringatan kalau belum ada foto yang dipilih
+                // --------------------------------------------------------
                 if (_fotoTerpilih == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Foto belum dipilih')),
                   );
                   return;
                 }
+                // -------------------------------
+                // Memanggil fungsi simpanKontak()
+                // -------------------------------
                 await simpanKontak();
               },
               style: ElevatedButton.styleFrom(

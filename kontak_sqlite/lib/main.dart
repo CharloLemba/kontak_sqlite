@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kontak_sqlite/pages/beranda.dart';
 
-// ---------------------------------------
-// Fungsi utama untuk menjalankan aplikasi
-// ---------------------------------------
+// --------------------------------------------------------------------
+// Fungsi utama untuk menjalankan aplikasi, memanggil halaman Beranda()
+// --------------------------------------------------------------------
 void main() {
   runApp(const MainApp());
 }

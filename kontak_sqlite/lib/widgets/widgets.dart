@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+// ==========================================================================================================
+// Membuat sebuah StatelessWidget untuk menampung empat tombol, simpan, hapus, telpon, & sms dalam sebuah Row
+// Dengan empat parameter untuk menjalankan fungsi masing-masing tombol.
+// ==========================================================================================================
 class BottomActionButtons extends StatelessWidget {
   final VoidCallback onSave;
   final VoidCallback onDelete;
@@ -22,9 +26,9 @@ class BottomActionButtons extends StatelessWidget {
         color: Colors.white,
         child: Row(
           children: [
-            // ------------------
+            // ==================
             // Tombol Simpan Data
-            // ------------------
+            // ==================
             Expanded(
               child: ElevatedButton(
                 onPressed: onSave,
@@ -48,9 +52,9 @@ class BottomActionButtons extends StatelessWidget {
             ),
             const SizedBox(width: 8),
 
-            // -----------------
+            // =================
             // Tombol Hapus Data
-            // -----------------
+            // =================
             Expanded(
               child: ElevatedButton(
                 onPressed: onDelete,
@@ -74,9 +78,9 @@ class BottomActionButtons extends StatelessWidget {
             ),
             const SizedBox(width: 8),
 
-            // --------------
+            // ==============
             // Tombol Telepon
-            // --------------
+            // ==============
             Expanded(
               child: ElevatedButton(
                 onPressed: onCall,
@@ -100,9 +104,9 @@ class BottomActionButtons extends StatelessWidget {
             ),
             const SizedBox(width: 8),
 
-            // ----------------
+            // ================
             // Tombol Pesan/SMS
-            // ----------------
+            // ================
             Expanded(
               child: ElevatedButton(
                 onPressed: onMessage,

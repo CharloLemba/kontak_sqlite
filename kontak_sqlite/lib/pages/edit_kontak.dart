@@ -18,11 +18,20 @@ class EditKontak extends StatefulWidget {
 }
 
 class _EditKontakState extends State<EditKontak> {
+  // =======================================================
+  // Membuat variabel unutk menampung foto yang dipilih user
+  // =======================================================
   File? _fotoTerpilih;
 
+  // ============================================================
+  // controller untuk menangkap input di textfiel nama & nomor hp
+  // ============================================================
   late TextEditingController namaKontakController;
   late TextEditingController nomorHPController;
 
+  // ===========================================================================================
+  // Fungsi untuk mengambil data nomor & nomor hp dari tabel terpilih di database berdasarkan id
+  // ===========================================================================================
   @override
   void initState() {
     super.initState();
@@ -32,6 +41,9 @@ class _EditKontakState extends State<EditKontak> {
     nomorHPController = TextEditingController(text: widget.kontak.nomorHP);
   }
 
+  // ===============================================
+  // Fungsi untuk mengambil file foto dari galeri hp
+  // ===============================================
   Future<void> _ambilFotoDariGaleri() async {
     final ImagePicker picker = ImagePicker();
     final XFile? foto = await picker.pickImage(source: ImageSource.gallery);
@@ -42,26 +54,39 @@ class _EditKontakState extends State<EditKontak> {
     }
   }
 
+  // =========================================================================================
+  // Fungsi untuk menyalin file ke direktori internal aplikasi dan mengembalikan path finalnya
+  // =========================================================================================
   Future<String> _simpanFileKeStorage(File fileGambar) async {
     final Directory direktoriApp = await getApplicationDocumentsDirectory();
     final String namaFile =
         '${DateTime.now().millisecondsSinceEpoch}_${foto_path.basename(fileGambar.path)}';
     final String pathTujuan = foto_path.join(direktoriApp.path, namaFile);
+    // ===================================
+    // Salin file ke folder lokal aplikasi
+    // ===================================
     final File fileBaru = await fileGambar.copy(pathTujuan);
     return fileBaru.path;
   }
 
+  // ==============================================================
+  // Fungsi untuk perbarui data ke database berdasarkan id terpilih
+  // ==============================================================
   Future<void> prosesUpdateKontak() async {
     final String namaKontak = namaKontakController.text.trim();
     final String nomorHPKontak = nomorHPController.text.trim();
 
     String pathFotoFinal = widget.kontak.fotoPath;
 
+    // =================================================================
     // Jika user memilih foto baru, simpan ke storage dan timpa path-nya
+    // =================================================================
     if (_fotoTerpilih != null) {
       pathFotoFinal = await _simpanFileKeStorage(_fotoTerpilih!);
 
-      // (Opsional) Hapus file lama jika mau bersih-bersih storage
+      // ======================================================
+      // (WAJIB) Hapus file lama jika mau bersih-bersih storage
+      // ======================================================
       try {
         final fileLama = File(widget.kontak.fotoPath);
         if (await fileLama.exists()) {
@@ -70,6 +95,9 @@ class _EditKontakState extends State<EditKontak> {
       } catch (_) {}
     }
 
+    // ================================================================================
+    // Buat variabel kontakBaru untuk dimasukan ke dalam objek Kontak di dalam database
+    // ================================================================================
     final kontakBaru = Kontak(
       id: widget.kontak.id,
       namaKontak: namaKontak,
@@ -78,20 +106,36 @@ class _EditKontakState extends State<EditKontak> {
     );
 
     try {
+      // ==================================================================================
+      // Lakukakn fungsi insertupdateKontakKontak untuk memperbarui data kontak ke database
+      // ==================================================================================
       await DatabaseHelper.instance.updateKontak(kontakBaru);
+      // ===========================================================
+      // Menampilkan pesan jika data berhasil diperbarui ke database
+      // ===========================================================
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Kontak berhasil diedit!')));
       Navigator.pop(context, true);
-    } catch (e) {
+    }
+    // ========================================================
+    // Menampilkan pesan jika data gagal diperbarui ke database
+    // ========================================================
+    catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Kontak gagal diedit!\n$e')));
     }
   }
 
+  // =======================================
+  // Fungsi untuk hapus kontak dari database
+  // =======================================
   Future<void> prosesHapusKontak() async {
+    // ===============================================
+    // Menampilkan modal untuk konfirmasi hapus dialog
+    // ===============================================
     bool? konfirmasi = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -111,10 +155,14 @@ class _EditKontakState extends State<EditKontak> {
     );
 
     if (konfirmasi == true) {
-      // Hapus data dari database
+      // ===============================
+      // Hapus data kontak dari database
+      // ===============================
       await DatabaseHelper.instance.deleteKontak(widget.kontak.id!);
 
-      // (Opsional) Hapus file fisik gambarnya dari storage lokal
+      // =====================================================
+      // (WAJIB) Hapus file fisik gambarnya dari storage lokal
+      // =====================================================
       try {
         final fileGambar = File(widget.kontak.fotoPath);
         if (await fileGambar.exists()) {
@@ -122,6 +170,9 @@ class _EditKontakState extends State<EditKontak> {
         }
       } catch (_) {}
 
+      // ==========================================
+      // Menampilkan pesan kontak berhaasil dihapus
+      // ==========================================
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
@@ -130,6 +181,9 @@ class _EditKontakState extends State<EditKontak> {
     }
   }
 
+  // ====================================================================
+  // Fungsi untuk melakukan panggilan ke nomor hp yang sudah diinput user
+  // ====================================================================
   Future<void> _panggilNomor() async {
     final Uri url = Uri(scheme: 'tel', path: nomorHPController.text.trim());
     if (await canLaunchUrl(url)) {
@@ -142,6 +196,9 @@ class _EditKontakState extends State<EditKontak> {
     }
   }
 
+  // ===================================================================
+  // Fungsi untuk mengirim pesan/SMS ke nomor hp yang sudah diinput user
+  // ===================================================================
   Future<void> _kirimPesan() async {
     final Uri url = Uri(scheme: 'sms', path: nomorHPController.text.trim());
     if (await canLaunchUrl(url)) {
@@ -154,6 +211,9 @@ class _EditKontakState extends State<EditKontak> {
     }
   }
 
+  // ==================================================================
+  // (WAJIB) Fungsi untuk dispose controllers textfield nama & nomor hp
+  // ==================================================================
   @override
   void dispose() {
     namaKontakController.dispose();
@@ -164,18 +224,27 @@ class _EditKontakState extends State<EditKontak> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // =====================================
+      // AppBar Aplikasi - Tampilan EditKontak
+      // =====================================
       appBar: AppBar(
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
         title: const Text('Edit Kontak'),
         centerTitle: true,
       ),
+      // ===========================================
+      // Bagian utama aplikasi - Tampilan EditKontak
+      // ===========================================
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // ========================================
+                // Menampilkan foto yang sudah dipilih user
+                // ========================================
                 if (_fotoTerpilih != null) ...[
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
@@ -192,13 +261,19 @@ class _EditKontakState extends State<EditKontak> {
                     icon: const Icon(Icons.refresh),
                     label: const Text('Ganti Foto'),
                   ),
-                ] else ...[
+                ]
+                // =================================
+                // Membuat Card untuk mengganti foto
+                // =================================
+                else ...[
                   Stack(
                     alignment: Alignment.center,
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
+                        // =======================================================
                         // Menampilkan foto yang sudah ada dari path lokal storage
+                        // =======================================================
                         child: Image.file(
                           File(widget.kontak.fotoPath),
                           width: 250,
@@ -236,6 +311,9 @@ class _EditKontakState extends State<EditKontak> {
                   ),
                 ],
                 const SizedBox(height: 20),
+                // ========================================
+                // Sebuah Card yang menampung dua Textfield
+                // ========================================
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Card(
@@ -243,6 +321,9 @@ class _EditKontakState extends State<EditKontak> {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
+                          // =======================================================
+                          // Dua Textfield untuk user dapat mengetik nama & nomor hp
+                          // =======================================================
                           TextField(
                             controller: namaKontakController,
                             decoration: const InputDecoration(
@@ -269,8 +350,16 @@ class _EditKontakState extends State<EditKontak> {
           ),
         ),
       ),
+      // =======================================================================
+      // Tombol untuk memperbarui data ke database,
+      // diambil dari Row() berisi empat tombol dari file
+      // widgets.dart yang ada di direktori "kontak_sqlite/widgets/widgets.dart"
+      // =======================================================================
       bottomNavigationBar: BottomActionButtons(
         onSave: () async {
+          // ==================================================================
+          // Menampilkan peringatan kalau Textfield nama & nomor hp belum diisi
+          // ==================================================================
           if (namaKontakController.text.trim().isEmpty ||
               nomorHPController.text.trim().isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -280,10 +369,22 @@ class _EditKontakState extends State<EditKontak> {
             );
             return;
           }
+          // =====================================
+          // Memanggil fungsi prosesUpdateKontak()
+          // =====================================
           await prosesUpdateKontak();
         },
+        // ==================================
+        // Memanggil fungsi prosesHapusKontak
+        // ==================================
         onDelete: prosesHapusKontak,
+        // ==============================
+        // Memanggil fungsi _panggilNomor
+        // ==============================
         onCall: _panggilNomor,
+        // ============================
+        // Memanggil fungsi _kirimPesan
+        // ============================
         onMessage: _kirimPesan,
       ),
     );
