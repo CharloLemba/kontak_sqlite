@@ -13,6 +13,9 @@ class Beranda extends StatefulWidget {
 }
 
 class _BerandaState extends State<Beranda> {
+  // -----------------------------------
+  // Mengambil data kontak dari database
+  // -----------------------------------
   Future<List<Kontak>> _dataKontak() async {
     return await DatabaseHelper.instance.getKontak();
   }
@@ -88,7 +91,9 @@ class _BerandaState extends State<Beranda> {
                               borderRadius: const BorderRadius.vertical(
                                 top: Radius.circular(12),
                               ),
+                              // ------------------------------------------------
                               // Menampilkan gambar dari File Path lokal aplikasi
+                              // ------------------------------------------------
                               child: Image.file(
                                 File(kontak.fotoPath),
                                 fit: BoxFit.cover,
@@ -140,6 +145,9 @@ class _BerandaState extends State<Beranda> {
           },
         ),
       ),
+      // --------------------
+      // Tombol tambah kontak
+      // --------------------
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.push(

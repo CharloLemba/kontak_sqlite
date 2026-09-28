@@ -14,11 +14,20 @@ class TambahKontak extends StatefulWidget {
 }
 
 class _TambahKontakState extends State<TambahKontak> {
+  // -------------------------------------------------------
+  // Membuat variabel unutk menampung foto yang dipilih user
+  // -------------------------------------------------------
   File? _fotoTerpilih;
 
+  // ------------------------------------------------------------
+  // controller untuk menangkap input di textfiel nama & nomor hp
+  // ------------------------------------------------------------
   final TextEditingController namaKontakController = TextEditingController();
   final TextEditingController nomorHPController = TextEditingController();
 
+  // -----------------------------------------------
+  // Fungsi untuk mengambil file foto dari galeri hp
+  // -----------------------------------------------
   Future<void> _ambilFotoDariGaleri() async {
     final ImagePicker picker = ImagePicker();
     final XFile? foto = await picker.pickImage(source: ImageSource.gallery);
@@ -29,18 +38,25 @@ class _TambahKontakState extends State<TambahKontak> {
     }
   }
 
-  // Fungsi menyalin file ke direktori internal aplikasi dan mengembalikan path finalnya
+  // -----------------------------------------------------------------------------------------
+  // Fungsi untuk menyalin file ke direktori internal aplikasi dan mengembalikan path finalnya
+  // -----------------------------------------------------------------------------------------
   Future<String> _simpanFileKeStorage(File fileGambar) async {
     final Directory direktoriApp = await getApplicationDocumentsDirectory();
     final String namaFile =
         '${DateTime.now().millisecondsSinceEpoch}_${foto_path.basename(fileGambar.path)}';
     final String pathTujuan = foto_path.join(direktoriApp.path, namaFile);
 
+    // -----------------------------------
     // Salin file ke folder lokal aplikasi
+    // -----------------------------------
     final File fileBaru = await fileGambar.copy(pathTujuan);
     return fileBaru.path;
   }
 
+  // -------------------------------------------------------------------------------------
+  // Fungsi untuk menyimpan data foto terpilih, nama dan nomor handphone ke dalam database
+  // -------------------------------------------------------------------------------------
   Future<void> simpanKontak() async {
     final String namaKontak = namaKontakController.text.trim();
     final String nomorHPKontak = nomorHPController.text.trim();
@@ -53,10 +69,14 @@ class _TambahKontakState extends State<TambahKontak> {
     }
 
     try {
-      // 1. Simpan file gambar secara fisik ke storage internal aplikasi
+      // ------------------------------------------------------------
+      // Simpan file gambar secara fisik ke storage internal aplikasi
+      // ------------------------------------------------------------
       final String pathFinal = await _simpanFileKeStorage(_fotoTerpilih!);
 
-      // 2. Buat objek Kontak dengan path string
+      // --------------------------------------------------------------------------------
+      // Buat variabel kontakBaru untuk dimasukan ke dalam objek Kontak di dalam database
+      // --------------------------------------------------------------------------------
       final kontakBaru = Kontak(
         id: null,
         namaKontak: namaKontak,
@@ -64,7 +84,9 @@ class _TambahKontakState extends State<TambahKontak> {
         fotoPath: pathFinal,
       );
 
-      // 3. Masukkan ke database SQLite
+      // ---------------------------------------------------------------------
+      // Lakukakn fungsi insertKontak untuk memasukkan data ke database SQLite
+      // ---------------------------------------------------------------------
       await DatabaseHelper.instance.insertKontak(kontakBaru);
 
       if (!mounted) return;
@@ -170,6 +192,9 @@ class _TambahKontakState extends State<TambahKontak> {
           ),
         ),
       ),
+      // --------------------------------------
+      // Tombol untuk menimpan data ke database
+      // --------------------------------------
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(12),
