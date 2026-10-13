@@ -20,10 +20,14 @@ class BottomActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Mengecek apakah mode gelap sedang aktif
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        color: Colors.white,
+        // Mengubah warna secara dinamis: abu-abu gelap jika dark mode, putih jika light mode
+        color: isDark ? Colors.grey[900] : Colors.white,
         child: Row(
           children: [
             // ==================

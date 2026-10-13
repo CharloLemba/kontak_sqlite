@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kontak_sqlite/pages/tambah_kontak.dart' as tambah_kontak;
 import 'package:kontak_sqlite/database/database_helper.dart';
 import 'package:kontak_sqlite/pages/edit_kontak.dart' as edit_kontak;
+import 'package:kontak_sqlite/main.dart';
 
 class Beranda extends StatefulWidget {
   const Beranda({super.key});
@@ -29,6 +30,9 @@ class _BerandaState extends State<Beranda> {
 
   @override
   Widget build(BuildContext context) {
+    final mainApp = MainApp.of(context);
+    final isDark = mainApp?.isDarkTheme ?? false;
+
     return Scaffold(
       // ----------------------------------
       // AppBar Aplikasi - Tampilan Beranda
@@ -38,6 +42,14 @@ class _BerandaState extends State<Beranda> {
         foregroundColor: Colors.white,
         title: const Text("Kontak - SQLite"),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              mainApp?.toggleTheme();
+            },
+            icon: Icon(isDark ? Icons.sunny : Icons.nightlight_round),
+          ),
+        ],
       ),
       // ----------------------------------------
       // Bagian utama aplikasi - Tampilan Beranda
